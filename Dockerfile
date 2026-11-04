@@ -1,20 +1,12 @@
-FROM node:20-bookworm-slim
+FROM node:20-slim
 
 WORKDIR /app
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        procps \
-        iproute2 \
-        curl \
-        ca-certificates \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN npm install koffi@^2.9.2
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    openssl curl iproute2 && \
+    rm -rf /var/lib/apt/lists/* 
 
 COPY . .
-
 RUN chmod +x main
 
 ENV PORT=3000
