@@ -1,14 +1,23 @@
-FROM node:alpine3.20
+FROM node:20-bookworm-slim
 
-WORKDIR /tmp
+WORKDIR /app
 
-COPY index.js package.json ./
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        procps \
+        iproute2 \
+        curl \
+        ca-certificates \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-EXPOSE 3000/tcp
+RUN npm install koffi@^2.9.2
 
-RUN apk update && apk upgrade &&\
-    apk add --no-cache bash openssl curl gcompat iproute2 coreutils &&\
-    chmod +x index.js &&\
-    npm install
+COPY . .
 
-CMD ["node", "index.js"]
+RUN chmod +x main
+
+ENV PORT=3000
+EXPOSE 3000
+
+CMD ["./main"]
